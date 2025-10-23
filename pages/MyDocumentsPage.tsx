@@ -1,10 +1,12 @@
-
 import React, { useState } from 'react';
-import { Document } from '../types';
+import { Document } from '../shared/types';
 import Button from '../components/Button';
 import { useAuth } from '../hooks/useAuth';
-import { generateTenantSummary } from '../services/geminiService';
 import Spinner from '../components/Spinner';
+
+// FIX: Use a relative path for the API URL to work in proxied environments.
+const API_URL = '/api';
+
 
 const UploadIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
@@ -15,35 +17,42 @@ const FileIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 
 const MyDocumentsPage: React.FC = () => {
-    const { user } = useAuth();
-    const [documents, setDocuments] = useState<Document[]>([
-        { id: '1', name: 'Passport.pdf', type: 'ID', fileType: 'PDF', uploadedAt: new Date() },
-        { id: '2', name: 'Landlord_Reference.pdf', type: 'Reference', fileType: 'PDF', uploadedAt: new Date() }
-    ]);
+    const { user, token } = useAuth();
+    // This component would now fetch documents from the backend
+    const [documents, setDocuments] = useState<Document[]>([]);
     const [aiSummary, setAiSummary] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
     const [isDeckGenerated, setIsDeckGenerated] = useState(false);
 
+    // In a real app, you'd fetch documents on load.
+    // useEffect(() => { ... fetch user documents ... }, [token]);
+
     const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            const newDoc: Document = {
-                id: Date.now().toString(),
-                name: file.name,
-                type: 'Other',
-                fileType: file.type.includes('pdf') ? 'PDF' : file.type.includes('jpeg') ? 'JPG' : 'PNG',
-                uploadedAt: new Date(),
-            };
-            setDocuments(prev => [...prev, newDoc]);
+            // This is a placeholder for actual backend upload logic.
+            console.log("Uploading file:", file.name);
+            alert("File upload is not implemented in this demo.");
         }
     };
 
     const handleGenerateSummary = async () => {
-        if (!user) return;
+        if (!user || !token) return;
         setIsGenerating(true);
-        const summary = await generateTenantSummary(user, documents);
-        setAiSummary(summary);
-        setIsGenerating(false);
+        try {
+            const response = await fetch(`${API_URL}/users/me/generate-summary`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('Failed to generate summary.');
+            const data = await response.json();
+            setAiSummary(data.summary);
+        } catch (error) {
+            console.error(error);
+            setAiSummary("Could not generate summary at this time.");
+        } finally {
+            setIsGenerating(false);
+        }
     };
     
     const handleGenerateDeck = () => {
@@ -71,18 +80,18 @@ const MyDocumentsPage: React.FC = () => {
                     </label>
 
                     <ul className="space-y-2">
-                        {documents.map(doc => (
+                       {documents.length > 0 ? documents.map(doc => (
                             <li key={doc.id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-md">
                                 <div className="flex items-center gap-3">
                                     <FileIcon className="w-5 h-5 text-primary" />
                                     <div>
                                         <p className="font-medium">{doc.name}</p>
-                                        <p className="text-xs text-neutral-500">{doc.type} - Uploaded on {doc.uploadedAt.toLocaleDateString()}</p>
+                                        <p className="text-xs text-neutral-500">{doc.type} - Uploaded on {new Date(doc.uploadedAt).toLocaleDateString()}</p>
                                     </div>
                                 </div>
                                 <Button size="sm" variant="danger">Remove</Button>
                             </li>
-                        ))}
+                        )) : <p className="text-center text-sm text-neutral-500 py-4">No documents uploaded yet.</p>}
                     </ul>
                 </div>
 

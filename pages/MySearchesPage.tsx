@@ -1,7 +1,7 @@
-
 import React from 'react';
 import Button from '../components/Button';
-import { PropertyType, SearchPreference } from '../types';
+// FIX: Update import path from types.ts to shared/types.ts
+import { PropertyType, SearchPreference } from '../shared/types';
 
 const mockSearches: SearchPreference[] = [
     { id: '1', name: 'City Centre 2-Bed', location: 'Dublin 2', minPrice: 2000, maxPrice: 2800, type: PropertyType.APARTMENT, minBedrooms: 2 },

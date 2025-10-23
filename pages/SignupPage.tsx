@@ -1,34 +1,30 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Input from '../components/Input';
 import Button from '../components/Button';
-import { User } from '../types';
 
 const SignupPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { signup } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
-    // Mock signup logic
-    if (username && email && password) {
-       const mockUser: User = {
-        id: `user-${Date.now()}`,
-        email: email,
-        username: username,
-      };
-      login(mockUser);
-      navigate('/dashboard');
-    } else {
-      setError('Please fill in all fields.');
+    try {
+        await signup(username, email, password);
+        navigate('/dashboard');
+    } catch (err: any) {
+        setError(err.message || 'Failed to sign up.');
+    } finally {
+        setLoading(false);
     }
   };
 
@@ -84,8 +80,8 @@ const SignupPage: React.FC = () => {
           </div>
 
           <div>
-            <Button type="submit" className="w-full">
-              Sign up
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Creating account...' : 'Sign up'}
             </Button>
           </div>
         </form>

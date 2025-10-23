@@ -1,9 +1,12 @@
-
 import React, { useState } from 'react';
-import { Listing } from '../types';
+// FIX: Update import path from types.ts to shared/types.ts
+import { Listing } from '../shared/types';
 import Button from './Button';
 import Spinner from './Spinner';
-import { generateMatchExplanation } from '../services/geminiService';
+// FIX: The geminiService.ts file is no longer on the frontend. API calls are made to the backend.
+
+// FIX: Use a relative path for the API URL to work in proxied environments.
+const API_URL = '/api';
 
 interface ListingCardProps {
   listing: Listing;
@@ -26,14 +29,31 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, isSaved, onSaveToggl
   const [explanation, setExplanation] = useState<string | null>(null);
   const [isLoadingExplanation, setIsLoadingExplanation] = useState(false);
 
+  // FIX: Call backend API for match explanation instead of local service call.
   const handleGetExplanation = async () => {
     setIsLoadingExplanation(true);
     setExplanation(null);
     // In a real app, user preferences would be dynamic.
     const mockPreferences = "2-bedroom apartment in Dublin 2 under €3000.";
-    const result = await generateMatchExplanation(listing.title, mockPreferences);
-    setExplanation(result);
-    setIsLoadingExplanation(false);
+    try {
+        const response = await fetch(`${API_URL}/listings/${listing.id}/explain-match`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userPreferences: mockPreferences }),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to get explanation');
+        }
+        const data = await response.json();
+        setExplanation(data.explanation);
+    } catch (error) {
+        console.error("Failed to fetch explanation:", error);
+        setExplanation("Could not generate AI explanation at this time.");
+    } finally {
+        setIsLoadingExplanation(false);
+    }
   }
 
   return (

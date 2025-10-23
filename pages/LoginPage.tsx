@@ -1,37 +1,32 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Input from '../components/Input';
 import Button from '../components/Button';
-import { User } from '../types';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('user@dwelli.app');
   const [password, setPassword] = useState('password123');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
 
   const from = location.state?.from?.pathname || '/dashboard';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
-    // Mock login logic
-    if (email && password) {
-      const mockUser: User = {
-        id: 'user-123',
-        email: email,
-        username: 'DemoUser',
-        profession: 'Software Engineer',
-      };
-      login(mockUser);
+    try {
+      await login(email, password);
       navigate(from, { replace: true });
-    } else {
-      setError('Please enter both email and password.');
+    } catch (err: any) {
+      setError(err.message || 'Failed to log in.');
+    } finally {
+        setLoading(false);
     }
   };
 
@@ -77,8 +72,8 @@ const LoginPage: React.FC = () => {
           </div>
 
           <div>
-            <Button type="submit" className="w-full">
-              Sign in
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign in'}
             </Button>
           </div>
         </form>

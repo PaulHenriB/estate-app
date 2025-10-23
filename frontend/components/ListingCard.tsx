@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 // FIX: Update import path from types.ts to shared/types.ts
-import { Listing } from '../shared/types';
+import { Listing } from '../../shared/types';
 import Button from './Button';
 import Spinner from './Spinner';
 // FIX: The geminiService.ts file is no longer on the frontend. API calls are made to the backend.

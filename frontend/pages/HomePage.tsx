@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { Listing } from '../shared/types';
+import { Listing } from '../../shared/types';
 import ListingCard from '../components/ListingCard';
 import { useAuth } from '../hooks/useAuth';
 import Spinner from '../components/Spinner';

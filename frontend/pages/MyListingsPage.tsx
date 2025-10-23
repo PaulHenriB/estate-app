@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ListingCard from '../components/ListingCard';
-import { Listing } from '../shared/types';
+import { Listing } from '../../shared/types';
 import { useAuth } from '../hooks/useAuth';
 import Spinner from '../components/Spinner';
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Document } from '../shared/types';
+import { Document } from '../../shared/types';
 import Button from '../components/Button';
 import { useAuth } from '../hooks/useAuth';
 import Spinner from '../components/Spinner';

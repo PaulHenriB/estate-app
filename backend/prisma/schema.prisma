@@ -1,1 +1,52 @@
-���Ȭʋ�>������
+model User {
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  passwordHash  String
+  name          String?
+  createdAt     DateTime  @default(now())
+  searches      SearchPreference[]
+  documents     Document[]
+  listings      Listing[] @relation("SavedListings")
+}
+
+model SearchPreference {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  location    String
+  propertyType String
+  maxPrice    Int?
+  minBedrooms Int?
+  shared      Boolean?
+  roomType    String?
+  leaseDuration String?
+  furnishing  String?
+  petsAllowed Boolean?
+  utilitiesIncluded Boolean?
+  accessibility String?
+  distanceTransport Int?
+  energyRating String?
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Listing {
+  id           Int      @id @default(autoincrement())
+  title        String
+  location     String
+  price        Int
+  propertyType String
+  bedrooms     Int
+  furnished    Boolean
+  url          String
+  description  String
+  images       String[]
+}
+
+model Document {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  fileName   String
+  fileUrl    String
+  fileType   String
+  uploadedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+}

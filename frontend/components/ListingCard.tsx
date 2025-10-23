@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-// FIX: Update import path from types.ts to shared/types.ts
 import { Listing } from '../../shared/types';
 import Button from './Button';
 import Spinner from './Spinner';
-// FIX: The geminiService.ts file is no longer on the frontend. API calls are made to the backend.
 
-// FIX: Use a relative path for the API URL to work in proxied environments.
 const API_URL = '/api';
 
 interface ListingCardProps {
@@ -29,7 +26,6 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, isSaved, onSaveToggl
   const [explanation, setExplanation] = useState<string | null>(null);
   const [isLoadingExplanation, setIsLoadingExplanation] = useState(false);
 
-  // FIX: Call backend API for match explanation instead of local service call.
   const handleGetExplanation = async () => {
     setIsLoadingExplanation(true);
     setExplanation(null);

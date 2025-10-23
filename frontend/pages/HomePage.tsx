@@ -4,7 +4,6 @@ import ListingCard from '../components/ListingCard';
 import { useAuth } from '../hooks/useAuth';
 import Spinner from '../components/Spinner';
 
-// FIX: Use a relative path for the API URL to work in proxied environments.
 const API_URL = '/api';
 
 const SearchIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (

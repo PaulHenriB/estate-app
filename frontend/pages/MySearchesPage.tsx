@@ -1,6 +1,5 @@
 import React from 'react';
 import Button from '../components/Button';
-// FIX: Update import path from types.ts to shared/types.ts
 import { PropertyType, SearchPreference } from '../../shared/types';
 
 const mockSearches: SearchPreference[] = [
